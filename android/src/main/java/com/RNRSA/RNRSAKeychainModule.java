@@ -27,11 +27,11 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void generate(String keyTag, Promise promise)  {
+  public void generate(String keyTag, String signatureAlgorithm, Promise promise)  {
     WritableNativeMap keys = new WritableNativeMap();
 
     try {
-        RSA rsa = new RSA();
+        RSA rsa = new RSA(keyTag, signatureAlgorithm);
         rsa.generate(keyTag);
         keys.putString("public",  rsa.getPublicKey());
         promise.resolve(keys);
@@ -43,9 +43,9 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void deletePrivateKey(String keyTag, Promise promise)  {
+  public void deletePrivateKey(String keyTag, String signatureAlgorithm, Promise promise)  {
     try {
-        RSA rsa = new RSA(keyTag);
+        RSA rsa = new RSA(keyTag, signatureAlgorithm);
         rsa.deletePrivateKey();
         promise.resolve(1);
     } catch(NoSuchAlgorithmException e) {
@@ -56,10 +56,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void encrypt(String message, String keyTag, Promise promise)  {
+  public void encrypt(String message, String keyTag, String signatureAlgorithm, Promise promise)  {
 
       try {
-          RSA rsa = new RSA(keyTag);
+          RSA rsa = new RSA(keyTag, signatureAlgorithm);
           String encodedMessage = rsa.encrypt(message);
           promise.resolve(encodedMessage);
       } catch(Exception e) {
@@ -68,10 +68,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void encrypt64(String message, String keyTag, Promise promise)  {
+  public void encrypt64(String message, String keyTag, String signatureAlgorithm, Promise promise)  {
 
       try {
-          RSA rsa = new RSA(keyTag);
+          RSA rsa = new RSA(keyTag, signatureAlgorithm);
           String encodedMessage = rsa.encrypt64(message);
           promise.resolve(encodedMessage);
       } catch(Exception e) {
@@ -81,10 +81,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
 
 
   @ReactMethod
-  public void decrypt(String encodedMessage, String keyTag, Promise promise)  {
+  public void decrypt(String encodedMessage, String keyTag, String signatureAlgorithm, Promise promise)  {
 
       try {
-          RSA rsa = new RSA(keyTag);
+          RSA rsa = new RSA(keyTag, signatureAlgorithm);
           String message = rsa.decrypt(encodedMessage);
           promise.resolve(message);
 
@@ -94,10 +94,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void decrypt64(String encodedMessage, String keyTag, Promise promise)  {
+  public void decrypt64(String encodedMessage, String keyTag, String signatureAlgorithm, Promise promise)  {
 
       try {
-          RSA rsa = new RSA(keyTag);
+          RSA rsa = new RSA(keyTag, signatureAlgorithm);
           String message = rsa.decrypt64(encodedMessage);
           promise.resolve(message);
 
@@ -107,10 +107,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
   }
 
     @ReactMethod
-    public void sign(String message, String keyTag, Promise promise)  {
+    public void sign(String message, String keyTag, String signatureAlgorithm, Promise promise)  {
 
         try {
-            RSA rsa = new RSA(keyTag);
+            RSA rsa = new RSA(keyTag, signatureAlgorithm);
             String signature = rsa.sign(message);
             promise.resolve(signature);
 
@@ -120,10 +120,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void sign64(String message, String keyTag, Promise promise)  {
+    public void sign64(String message, String keyTag, String signatureAlgorithm, Promise promise)  {
 
         try {
-            RSA rsa = new RSA(keyTag);
+            RSA rsa = new RSA(keyTag, signatureAlgorithm);
             String signature = rsa.sign64(message);
             promise.resolve(signature);
 
@@ -133,10 +133,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void verify(String signature, String message, String keyTag, Promise promise)  {
+    public void verify(String signature, String message, String keyTag, String signatureAlgorithm, Promise promise)  {
 
         try {
-            RSA rsa = new RSA(keyTag);
+            RSA rsa = new RSA(keyTag, signatureAlgorithm);
             boolean verified = rsa.verify(signature, message);
             promise.resolve(verified);
 
@@ -146,10 +146,10 @@ public class RNRSAKeychainModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void verify64(String signature, String message, String keyTag, Promise promise)  {
+    public void verify64(String signature, String message, String keyTag, String signatureAlgorithm, Promise promise)  {
 
         try {
-            RSA rsa = new RSA(keyTag);
+            RSA rsa = new RSA(keyTag, signatureAlgorithm);
             boolean verified = rsa.verify64(signature, message);
             promise.resolve(verified);
 

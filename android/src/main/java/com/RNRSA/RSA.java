@@ -66,6 +66,7 @@ public class RSA {
     private static final String PRIVATE_HEADER = "RSA PRIVATE KEY";
 
     private String keyTag;
+    private String signatureAlgorithm = "SHA512withRSA";
 
     private PublicKey publicKey;
     private PrivateKey privateKey;
@@ -75,6 +76,12 @@ public class RSA {
 
     public RSA(String keyTag) throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException, IOException, CertificateException {
         this.keyTag = keyTag;
+        this.loadFromKeystore();
+    }
+
+    public RSA(String keyTag, String signatureAlgorithm) throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException, IOException, CertificateException {
+        this.keyTag = keyTag;
+        this.signatureAlgorithm = signatureAlgorithm;
         this.loadFromKeystore();
     }
 
@@ -166,7 +173,7 @@ public class RSA {
     }
 
     private boolean verify(byte[] signatureBytes, byte[] messageBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
-        Signature publicSignature = Signature.getInstance("SHA512withRSA");
+        Signature publicSignature = Signature.getInstance(this.signatureAlgorithm);
         publicSignature.initVerify(this.publicKey);
         publicSignature.update(messageBytes);
         return publicSignature.verify(signatureBytes);
@@ -174,7 +181,7 @@ public class RSA {
 
     // b64 message
     public boolean verify64(String signature, String message) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
-        Signature publicSignature = Signature.getInstance("SHA512withRSA");
+        Signature publicSignature = Signature.getInstance(this.signatureAlgorithm);
         publicSignature.initVerify(this.publicKey);
         byte[] messageBytes = Base64.decode(message, Base64.DEFAULT);
         byte[] signatureBytes = Base64.decode(signature, Base64.DEFAULT);
@@ -183,7 +190,7 @@ public class RSA {
 
     // utf-8 message
     public boolean verify(String signature, String message) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
-        Signature publicSignature = Signature.getInstance("SHA512withRSA");
+        Signature publicSignature = Signature.getInstance(this.signatureAlgorithm);
         publicSignature.initVerify(this.publicKey);
         byte[] messageBytes = message.getBytes(UTF_8);
         byte[] signatureBytes = Base64.decode(signature, Base64.DEFAULT);
@@ -273,11 +280,13 @@ public class RSA {
 
     public void generate(String keyTag) throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, "AndroidKeyStore");
+        String [] signatureParts = this.signatureAlgorithm.split("[A-Z]+\d+");
+        String [] letterAndNumberParts = signatureParts[0].split("[A-Z]+");
         kpg.initialize(new KeyGenParameterSpec.Builder(
                 keyTag,
                 PURPOSE_ENCRYPT | PURPOSE_DECRYPT | PURPOSE_SIGN | PURPOSE_VERIFY
         )
-                .setDigests(KeyProperties.DIGEST_SHA512)
+                .setDigests(letterAndNumberParts[0] + "-" + letterAndNumberParts[1])
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                 .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
                 .build());
