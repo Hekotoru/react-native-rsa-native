@@ -280,7 +280,7 @@ public class RSA {
 
     public void generate(String keyTag) throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, "AndroidKeyStore");
-        String [] signatureParts = this.signatureAlgorithm.split("[A-Z]+\d+");
+        String [] signatureParts = this.signatureAlgorithm.split("[A-Z]+[0-9]+");
         String [] letterAndNumberParts = signatureParts[0].split("[A-Z]+");
         kpg.initialize(new KeyGenParameterSpec.Builder(
                 keyTag,
