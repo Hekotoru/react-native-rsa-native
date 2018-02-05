@@ -4,19 +4,24 @@
 // Code largely based on practices as defined by:
 // https://developer.apple.com/library/content/documentation/Security/Conceptual/CertKeyTrustProgGuide/KeyRead.html#//apple_ref/doc/uid/TP40001358-CH222-SW1
 
+//keySecAlgorithm:
+// https://opensource.apple.com/source/Security/Security-57740.1.18/OSX/sec/Security/SecKeyAdaptors.c.auto.html
+
 typedef void (^SecKeyPerformBlock)(SecKeyRef key);
 
 @interface RSANative ()
 @property (nonatomic) NSString *keyTag;
+@property (nonatomic) NSString *signatureAlgortihm;
 @property (nonatomic) SecKeyRef publicKeyRef;
 @property (nonatomic) SecKeyRef privateKeyRef;
 @end
 
 @implementation RSANative
 
-- (instancetype)initWithKeyTag:(NSString *)keyTag {
+- (instancetype)initWithKeyTag:(NSString *)keyTag initWithSignatureAlgorithm:(NSString *)signatureAlgorithm {
     self = [super init];
     if (self) {
+        _signatureAlgortihm = signatureAlgorithm;
         _keyTag = keyTag;
     }
     return self;
@@ -230,12 +235,11 @@ typedef void (^SecKeyPerformBlock)(SecKeyRef key);
     __block NSString *encodedSignature = nil;
 
     void(^signer)(SecKeyRef) = ^(SecKeyRef privateKey) {
-        SecKeyAlgorithm algorithm = kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA512;
-
+        SecKeyAlgorithm algorithm = (__bridge SecKeyAlgorithm)(self.signatureAlgortihm);
+        
         BOOL canSign = SecKeyIsAlgorithmSupported(privateKey,
                                                 kSecKeyOperationTypeSign,
                                                 algorithm);
-
         NSData* signature = nil;
 
         if (canSign) {
@@ -278,7 +282,7 @@ typedef void (^SecKeyPerformBlock)(SecKeyRef key);
     __block BOOL result = NO;
 
     void(^verifier)(SecKeyRef) = ^(SecKeyRef publicKey) {
-        SecKeyAlgorithm algorithm = kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA512;
+        SecKeyAlgorithm algorithm = (__bridge SecKeyAlgorithm)(self.signatureAlgortihm);
 
         BOOL canVerify = SecKeyIsAlgorithmSupported(publicKey,
                                                     kSecKeyOperationTypeVerify,
