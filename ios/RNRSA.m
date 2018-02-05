@@ -99,45 +99,62 @@ RCT_EXPORT_MODULE()
 
 // Keychain based API, provide a key chain tag with each call
 
-RCT_EXPORT_METHOD(generate:(NSString *)keyTag resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(generate:(NSString *)keyTag
+                  withSignatureAlgorithm:(NSString *)signatureAlgorithm
+                  resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag];
+    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag initWithSignatureAlgorithm:signatureAlgorithm];
     [rsa generate];
     NSDictionary *keys = @{@"public" : [rsa encodedPublicKey]};
     resolve(keys);
 }
 
-RCT_EXPORT_METHOD(deletePrivateKey:(NSString *)keyTag resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(deletePrivateKey:(NSString *)keyTag
+                  withSignatureAlgorithm:(NSString *)signatureAlgorithm
+                  resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag];
+    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag initWithSignatureAlgorithm:signatureAlgorithm];
     [rsa deletePrivateKey];
     resolve(@(YES));
 }
 
-RCT_EXPORT_METHOD(encrypt:(NSString *)message withKeyTag:(NSString *)keyTag resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(encrypt:(NSString *)message
+                  withKeyTag:(NSString *)keyTag
+                  andSignatureAlgorithm:(NSString *)signatureAlgorithm
+                  resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag];
+    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag initWithSignatureAlgorithm:signatureAlgorithm];
     NSString *encodedMessage = [rsa encrypt:message];
     resolve(encodedMessage);
 }
 
-RCT_EXPORT_METHOD(decrypt:(NSString *)encodedMessage withKeyTag:(NSString *)keyTag resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(decrypt:(NSString *)encodedMessage
+                  withKeyTag:(NSString *)keyTag
+                  andSignatureAlgorithm:(NSString *)signatureAlgorithm
+                  resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag];
+    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag initWithSignatureAlgorithm:signatureAlgorithm];
     NSString *message = [rsa decrypt:encodedMessage];
     resolve(message);
 }
 
-RCT_EXPORT_METHOD(sign:(NSString *)message withKeyTag:(NSString *)keyTag resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(sign:(NSString *)message
+                  withKeyTag:(NSString *)keyTag
+                  andSignatureAlgorithm:(NSString *)signatureAlgorithm
+                  resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag];
+    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag initWithSignatureAlgorithm:signatureAlgorithm];
     NSString *signature = [rsa sign:message];
     resolve(signature);
 }
 
-RCT_EXPORT_METHOD(verify:(NSString *)signature withMessage:(NSString *)message andKeyTag:(NSString *)keyTag resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(verify:(NSString *)signature
+                  withMessage:(NSString *)message
+                  withKeyTag:(NSString *)keyTag
+                  andSignatureAlgorithm:(NSString *)signatureAlgorithm
+                  resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag];
+    RSANative *rsa = [[RSANative alloc] initWithKeyTag:keyTag initWithSignatureAlgorithm:signatureAlgorithm];
     BOOL valid = [rsa verify:signature withMessage:message];
     resolve(@(valid));
 }

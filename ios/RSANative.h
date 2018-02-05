@@ -13,7 +13,8 @@
 @property (nonatomic) NSString *publicKey;
 @property (nonatomic) NSString *privateKey;
 
-- (instancetype)initWithKeyTag:(NSString *)keyTag;
+- (instancetype)initWithKeyTag:(NSString *)keyTag
+    initWithSignatureAlgorithm:(NSString *) signatureAlgorithm;
 
 - (void)generate;
 - (void)deletePrivateKey;
