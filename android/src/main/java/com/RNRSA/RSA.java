@@ -153,7 +153,7 @@ public class RSA {
     }
 
     private String sign(byte[] messageBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
-        Signature privateSignature = Signature.getInstance("SHA512withRSA");
+        Signature privateSignature = Signature.getInstance(this.signatureAlgorithm);
         privateSignature.initSign(this.privateKey);
         privateSignature.update(messageBytes);
         byte[] signature = privateSignature.sign();
@@ -280,13 +280,13 @@ public class RSA {
 
     public void generate(String keyTag) throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, "AndroidKeyStore");
-        String [] signatureParts = this.signatureAlgorithm.split("[A-Z]+[0-9]+");
-        String [] letterAndNumberParts = signatureParts[0].split("[A-Z]+");
+        String [] signatureParts = this.signatureAlgorithm.split("with");
+        String [] characterAndNumberParts = signatureParts[0].split("(?<=\\D)(?=\\d)");
         kpg.initialize(new KeyGenParameterSpec.Builder(
                 keyTag,
                 PURPOSE_ENCRYPT | PURPOSE_DECRYPT | PURPOSE_SIGN | PURPOSE_VERIFY
         )
-                .setDigests(letterAndNumberParts[0] + "-" + letterAndNumberParts[1])
+                .setDigests(characterAndNumberParts[0] + "-" + characterAndNumberParts[1])
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                 .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
                 .build());
